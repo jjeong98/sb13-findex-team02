@@ -27,8 +27,8 @@ public class IndexInfoRepositoryImpl implements IndexInfoRepositoryCustom {
                 .select(indexInfo.count())
                 .from(indexInfo)
                 .where(
-                        indexClassificationEq(request.indexClassification()),
-                        indexNameEq(request.indexName()),
+                        indexClassificationContains(request.indexClassification()),
+                        indexNameContains(request.indexName()),
                         favoriteEq(request.favorite())
                 )
                 .fetchOne();
@@ -42,8 +42,8 @@ public class IndexInfoRepositoryImpl implements IndexInfoRepositoryCustom {
         return queryFactory
                 .selectFrom(indexInfo)
                 .where(
-                        indexClassificationEq(request.indexClassification()),
-                        indexNameEq(request.indexName()),
+                        indexClassificationContains(request.indexClassification()),
+                        indexNameContains(request.indexName()),
                         favoriteEq(request.favorite()),
                         cursorCondition(
                                 request.sortField(),
@@ -91,16 +91,16 @@ public class IndexInfoRepositoryImpl implements IndexInfoRepositoryCustom {
     }
 
     // 지수 분류명 필터
-    private BooleanExpression indexClassificationEq(String classification) {
+    private BooleanExpression indexClassificationContains(String classification) {
         return StringUtils.hasText(classification)
-                ? indexInfo.indexClassification.eq(classification)
+                ? indexInfo.indexClassification.containsIgnoreCase(classification)
                 : null;
     }
 
     // 지수명 필터
-    private BooleanExpression indexNameEq(String name) {
+    private BooleanExpression indexNameContains(String name) {
         return StringUtils.hasText(name)
-                ? indexInfo.indexName.eq(name)
+                ? indexInfo.indexName.containsIgnoreCase(name)
                 : null;
     }
 
