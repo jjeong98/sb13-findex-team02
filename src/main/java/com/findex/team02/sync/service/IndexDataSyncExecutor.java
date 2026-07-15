@@ -64,15 +64,15 @@ public class IndexDataSyncExecutor {
                 .indexInfo(indexInfo)
                 .baseDate(targetDate)
                 .sourceType(SourceType.OPEN_API)
-                .marketPrice(toBigDecimal(item.mkp()))
-                .closingPrice(toBigDecimal(item.clpr()))
-                .highPrice(toBigDecimal(item.hipr()))
-                .lowPrice(toBigDecimal(item.lopr()))
-                .versus(toBigDecimal(item.vs()))
-                .fluctuationRate(toBigDecimal(item.fltRt()))
-                .tradingQuantity(toLong(item.tvol()))
-                .tradingPrice(toLong(item.tamt()))
-                .marketTotalAmount(toLong(item.mktcap()))
+                .marketPrice(toBigDecimalOrZero(item.mkp()))
+                .closingPrice(toBigDecimalOrZero(item.clpr()))
+                .highPrice(toBigDecimalOrZero(item.hipr()))
+                .lowPrice(toBigDecimalOrZero(item.lopr()))
+                .versus(toBigDecimalOrZero(item.vs()))
+                .fluctuationRate(toBigDecimalOrZero(item.fltRt()))
+                .tradingQuantity(toLongOrZero(item.tvol()))
+                .tradingPrice(toLongOrZero(item.tamt()))
+                .marketTotalAmount(toLongOrZero(item.mktcap()))
                 .build();
 
         return indexDataRepository.save(indexData);
@@ -84,6 +84,18 @@ public class IndexDataSyncExecutor {
 
     private Long toLong(String value) {
         return (value == null || value.isBlank()) ? null : Long.parseLong(value);
+    }
+
+    // index_data의 수치 컬럼은 전부 NOT NULL이라 신규 생성 시에는 null을 허용할 수 없음.
+    // Open API가 일부 지수(시가총액 미산출 등)에 대해 빈 값을 내려주는 경우 0으로 대체
+    private BigDecimal toBigDecimalOrZero(String value) {
+        BigDecimal parsed = toBigDecimal(value);
+        return parsed == null ? BigDecimal.ZERO : parsed;
+    }
+
+    private Long toLongOrZero(String value) {
+        Long parsed = toLong(value);
+        return parsed == null ? 0L : parsed;
     }
 
     private SyncJob saveSyncJob(IndexInfo indexInfo, LocalDate targetDate, String worker, SyncJobResult result) {
