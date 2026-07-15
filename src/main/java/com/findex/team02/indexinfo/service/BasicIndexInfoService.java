@@ -8,18 +8,25 @@ import com.findex.team02.indexinfo.mapper.IndexInfoMapper;
 import com.findex.team02.indexinfo.repository.IndexInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class BasicIndexInfoService implements IndexInfoService {
+
+    private static final Set<String> ALLOWED_SORT_FIELDS =
+            Set.of("indexName", "employedItemsCount", "indexClassification");
 
     private final IndexInfoRepository indexInfoRepository;
     private final IndexInfoMapper indexInfoMapper;
 
     @Override
     public CursorPageResponseIndexInfoDto getIndexInfos(IndexInfoSearchRequest request) {
+        validateRequest(request);
+
         int size = request.size();
 
         List<IndexInfo> indexInfos = indexInfoRepository.findAllByCondition(request);
@@ -66,6 +73,26 @@ public class BasicIndexInfoService implements IndexInfoService {
                 totalElements,
                 hasNext
         );
+    }
+
+    // 요청값 검증
+    private void validateRequest(IndexInfoSearchRequest request) {
+        if (request.size() <= 0) {
+            throw new IllegalArgumentException("size는 1 이상이어야 합니다. 요청값: " + request.size());
+        }
+
+        if (StringUtils.hasText(request.sortField())
+                && !ALLOWED_SORT_FIELDS.contains(request.sortField())) {
+            throw new IllegalArgumentException("지원하지 않는 정렬 필드입니다: " + request.sortField());
+        }
+
+        // cursor와 idAfter는 항상 쌍으로 와야 함 (하나만 있으면 페이지네이션 조건이 깨짐)
+        boolean hasCursor = StringUtils.hasText(request.cursor());
+        boolean hasIdAfter = request.idAfter() != null;
+
+        if (hasCursor != hasIdAfter) {
+            throw new IllegalArgumentException("cursor와 idAfter는 함께 전달되어야 합니다.");
+        }
     }
 
 }
