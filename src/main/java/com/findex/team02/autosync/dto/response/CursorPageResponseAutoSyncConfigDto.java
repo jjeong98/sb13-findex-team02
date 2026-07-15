@@ -1,9 +1,9 @@
-package com.findex.team02.syncjob.dto;
+package com.findex.team02.autosync.dto.response;
 
 import java.util.List;
 
-public record CursorPageResponse<T>(
-        List<T> content,
+public record CursorPageResponseAutoSyncConfigDto(
+        List<AutoSyncConfigDto> content,
         String nextCursor,
         Long nextIdAfter,
         int size,
