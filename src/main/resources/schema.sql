@@ -25,6 +25,9 @@ CREATE TABLE "index_info" (
                               CONSTRAINT "PK_INDEX_INFO"
                                   PRIMARY KEY ("id"),
 
+                              CONSTRAINT "UK_INDEX_INFO_CLASSIFICATION_NAME"
+                                  UNIQUE ("index_classification", "index_name"),
+
                               CONSTRAINT "CK_INDEX_INFO_EMPLOYED_ITEMS_COUNT"
                                   CHECK ("employed_items_count" >= 0),
 
@@ -115,6 +118,7 @@ CREATE TABLE "sync_job" (
                             "job_time" TIMESTAMP NOT NULL,
                             "result" VARCHAR NOT NULL,
                             "created_at" TIMESTAMP NOT NULL,
+                            "updated_at" TIMESTAMP NOT NULL,
                             "job_type" VARCHAR NOT NULL,
 
                             CONSTRAINT "PK_SYNC_JOB"
