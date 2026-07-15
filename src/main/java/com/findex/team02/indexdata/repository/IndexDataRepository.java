@@ -2,10 +2,11 @@ package com.findex.team02.indexdata.repository;
 
 import com.findex.team02.indexdata.entity.IndexData;
 import com.findex.team02.indexinfo.entity.IndexInfo;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
     IndexDataRepositoryCustom {
@@ -52,7 +53,7 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
 
     // 특정 지수의 특정 기준일 데이터를 조회한다.
     Optional<IndexData> findByIndexInfoAndBaseDate(
-        IndexInfo indexInfo,
-        LocalDate baseDate
+            IndexInfo indexInfo,
+            LocalDate baseDate
     );
 }
