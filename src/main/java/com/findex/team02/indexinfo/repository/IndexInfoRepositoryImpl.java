@@ -15,7 +15,6 @@ import java.util.Objects;
 
 import static com.findex.team02.indexinfo.entity.QIndexInfo.indexInfo;
 
-
 @RequiredArgsConstructor
 public class IndexInfoRepositoryImpl implements IndexInfoRepositoryCustom {
 

@@ -46,7 +46,6 @@ public class BasicIndexInfoService implements IndexInfoService {
             content = content.subList(0, size);
         }
 
-
         IndexInfo last = indexInfos.get(indexInfos.size() - 1);
 
         // [수정] nextCursor를 항상 id로 내려주던 버그 수정
