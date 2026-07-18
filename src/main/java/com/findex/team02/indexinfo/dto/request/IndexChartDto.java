@@ -1,4 +1,4 @@
-package com.findex.team02.indexinfo.dto;
+package com.findex.team02.indexinfo.dto.request;
 
 import com.findex.team02.indexdata.dto.ChartDataPointDto;
 
