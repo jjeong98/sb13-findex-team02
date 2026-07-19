@@ -40,15 +40,7 @@ public class AutoSyncScheduler {
                 return;
             }
 
-            LocalDate targetDate = openApiService.findLatestAvailableDate();
-
-            IndexDataSyncRequest request = new IndexDataSyncRequest(
-                    indexInfoIds,
-                    targetDate,
-                    targetDate
-            );
-
-            syncJobService.syncIndexData(request, SYSTEM_WORKER_NAME);
+            syncJobService.syncLatestIndexData(indexInfoIds, SYSTEM_WORKER_NAME);
         } finally {
             running.set(false);
         }

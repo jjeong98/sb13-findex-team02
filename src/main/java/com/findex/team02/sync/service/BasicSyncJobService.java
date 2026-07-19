@@ -136,6 +136,36 @@ public class BasicSyncJobService implements SyncJobService {
         );
     }
 
+    @Override
+    public List<SyncJobDto> syncLatestIndexData(List<Long> indexInfoIds, String worker) {
+        if (indexInfoIds == null || indexInfoIds.isEmpty()) {
+            return List.of();
+        }
+
+        List<IndexInfo> targetIndices = indexInfoRepository.findAllById(indexInfoIds);
+
+        LocalDate targetDate;
+        try {
+            targetDate = openApiService.findLatestAvailableDate();
+        } catch (Exception e) {
+            List<SyncJob> failures = targetIndices.stream()
+                    .map(indexInfo -> indexDataSyncExecutor.saveFailure(indexInfo, null, worker))
+                    .toList();
+
+            return syncJobMapper.toDtoList(failures);
+        }
+
+        IndexDataSyncRequest request = new IndexDataSyncRequest(
+                targetIndices.stream()
+                        .map(IndexInfo::getId)
+                        .toList(),
+                targetDate,
+                targetDate
+        );
+
+        return syncIndexData(request, worker);
+    }
+
     private List<IndexInfo> resolveTargetIndices(List<Long> indexInfoIds) {
         if (indexInfoIds == null || indexInfoIds.isEmpty()) {
             return indexInfoRepository.findAll();
