@@ -2,7 +2,7 @@ package com.findex.team02.indexdata.dto.response;
 
 import java.math.BigDecimal;
 
-public record IndexPerformanceDto(
+public record FavoriteIndexPerformanceDto(
         Long indexInfoId,
         String indexClassification,
         String indexName,
