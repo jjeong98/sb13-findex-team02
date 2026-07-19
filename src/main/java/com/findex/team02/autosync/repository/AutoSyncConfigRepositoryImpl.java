@@ -97,25 +97,25 @@ public class AutoSyncConfigRepositoryImpl implements AutoSyncConfigRepositoryCus
             String sortField,
             String sortDirection,
             String cursor,
-            Long cursorId
+            Long idAfter
     ) {
-        if (!StringUtils.hasText(cursor) || cursorId == null) {
+        if (!StringUtils.hasText(cursor) || idAfter == null) {
             return null; // 첫 페이지
         }
 
         boolean desc = "desc".equalsIgnoreCase(sortDirection);
 
         if ("enabled".equals(sortField)) {
-            return enabledCursorCondition(Boolean.parseBoolean(cursor), cursorId, desc);
+            return enabledCursorCondition(Boolean.parseBoolean(cursor), idAfter, desc);
         }
 
         return desc
                 ? autoSyncConfig.indexInfo.indexName.lt(cursor)
                 .or(autoSyncConfig.indexInfo.indexName.eq(cursor)
-                        .and(autoSyncConfig.id.lt(cursorId)))
+                        .and(autoSyncConfig.id.lt(idAfter)))
                 : autoSyncConfig.indexInfo.indexName.gt(cursor)
                 .or(autoSyncConfig.indexInfo.indexName.eq(cursor)
-                        .and(autoSyncConfig.id.gt(cursorId)));
+                        .and(autoSyncConfig.id.gt(idAfter)));
     }
 
     private BooleanExpression enabledCursorCondition(
@@ -128,7 +128,6 @@ public class AutoSyncConfigRepositoryImpl implements AutoSyncConfigRepositoryCus
                         ? autoSyncConfig.id.lt(cursorId)
                         : autoSyncConfig.id.gt(cursorId));
 
-        // ASC: false → true, DESC: true → false
         BooleanExpression nextEnabled = desc
                 ? autoSyncConfig.enabled.eq(false).and(autoSyncConfig.enabled.ne(cursorEnabled))
                 : autoSyncConfig.enabled.eq(true).and(autoSyncConfig.enabled.ne(cursorEnabled));
